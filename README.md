@@ -49,8 +49,8 @@ https://github.com/axion15tth/baby-cry-analysis
 ### 1. リポジトリのクローン
 
 ```bash
-git clone <repository-url>
-cd nagoichi
+git clone https://github.com/axion15tth/baby-cry-analysis.git
+cd baby-cry-analysis
 ```
 
 ### 2. バックエンドのセットアップ

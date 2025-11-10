@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# FastAPI
+.env
+.env.local
+
+# Database
+*.db
+*.sqlite
+
+# Storage
+backend/storage/audio/*
+!backend/storage/audio/.gitkeep
+ml_models/*.pth
+ml_models/*.pt
+
+# IDEs
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+
+# Node
+node_modules/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Alembic
+alembic/versions/*.pyc
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Logs
+*.log
+
+# Test
+.pytest_cache/
+.coverage
+htmlcov/

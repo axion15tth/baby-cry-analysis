@@ -2,6 +2,10 @@
 
 赤ちゃんの泣き声を解析し、音響特徴を抽出・可視化するWebアプリケーションシステムです。
 
+## GitHubリポジトリ
+
+https://github.com/axion15tth/baby-cry-analysis
+
 ## 概要
 
 本システムは、赤ちゃんの泣き声音声ファイルをアップロードし、以下の機能を提供します：
@@ -113,6 +117,11 @@ cd frontend
 
 # 依存パッケージのインストール
 npm install
+
+# 環境変数の設定（オプション）
+# フロントエンドの.envファイルを作成してAPIのURLを設定
+# デフォルトではhttp://localhost:8000/api/v1を使用します
+echo "VITE_API_URL=http://localhost:8000/api/v1" > .env
 
 # 開発サーバーの起動
 npm run dev
@@ -245,6 +254,28 @@ npm run type-check
 
 ## デプロイ
 
+### 外部アクセス設定
+
+サーバーを外部に公開する場合、以下の設定が必要です：
+
+#### バックエンド (.env)
+```bash
+# フロントエンドのURLをCORS許可リストに追加
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,http://your-server-ip:5173
+```
+
+#### フロントエンド (.env)
+```bash
+# バックエンドAPIのURLを設定
+VITE_API_URL=http://your-server-ip:8000/api/v1
+```
+
+#### AWS EC2の場合
+Security Groupで以下のポートを開放：
+- ポート 8000（バックエンドAPI）
+- ポート 5173（フロントエンド開発サーバー）
+- ポート 22（SSH）
+
 ### バックエンド
 
 ```bash
@@ -252,6 +283,7 @@ npm run type-check
 export DATABASE_URL="postgresql://user:password@host:5432/dbname"
 export REDIS_URL="redis://host:6379/0"
 export SECRET_KEY="your-secret-key"
+export ALLOWED_ORIGINS="http://your-frontend-url"
 
 # Gunicornで起動
 gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
@@ -263,6 +295,9 @@ celery -A app.celery_app worker --loglevel=info
 ### フロントエンド
 
 ```bash
+# 環境変数を設定
+export VITE_API_URL="http://your-backend-url/api/v1"
+
 # ビルド
 npm run build
 
@@ -301,6 +336,33 @@ celery -A app.celery_app worker --loglevel=debug
 # Redisのキューを確認
 redis-cli
 > KEYS *
+```
+
+### CORS エラー（外部アクセス時）
+
+ブラウザのコンソールに「Access-Control-Allow-Origin」エラーが表示される場合：
+
+1. バックエンドの `.env` ファイルを確認
+```bash
+# フロントエンドのURLが含まれているか確認
+cat backend/.env | grep ALLOWED_ORIGINS
+```
+
+2. フロントエンドの `.env` ファイルを確認
+```bash
+# バックエンドのURLが正しいか確認
+cat frontend/.env | grep VITE_API_URL
+```
+
+3. バックエンドを再起動して設定を反映
+```bash
+# 既存のプロセスを停止
+lsof -ti:8000 | xargs -r kill -9
+
+# 新しい設定で起動
+cd backend
+source .venv/bin/activate
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ## ライセンス

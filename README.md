@@ -320,3 +320,4 @@ redis-cli
 - [API仕様書](docs/API.md)
 - [データベース設計書](docs/DATABASE.md)
 - [アーキテクチャ設計書](docs/ARCHITECTURE.md)
+- [デプロイガイド](docs/DEPLOYMENT.md)

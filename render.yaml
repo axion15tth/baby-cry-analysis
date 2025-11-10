@@ -1,0 +1,53 @@
+services:
+  # Backend API
+  - type: web
+    name: baby-cry-backend
+    env: python
+    buildCommand: |
+      cd backend
+      pip install -r requirements.txt
+    startCommand: |
+      cd backend
+      alembic upgrade head
+      gunicorn app.main:app -w 2 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: baby-cry-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: baby-cry-redis
+          type: redis
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 1440
+      - key: ALLOWED_ORIGINS
+        value: https://baby-cry-frontend.onrender.com
+      - key: PYTHON_VERSION
+        value: 3.10.0
+
+  # Frontend
+  - type: web
+    name: baby-cry-frontend
+    env: static
+    buildCommand: |
+      cd frontend
+      npm install
+      npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+
+databases:
+  - name: baby-cry-db
+    databaseName: baby_cry_db
+    user: baby_cry_user
+
+  - name: baby-cry-redis
+    plan: free
